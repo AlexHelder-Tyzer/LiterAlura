@@ -98,34 +98,40 @@ public class Principal {
     private void buscarLibroPorTitulo(){
 
         Datos datos = getObtenerDatos();
-        DatosLibro datosLibro = datos.resultados().getFirst(); // devuelve el primer libro encontrado
-        Libro libro = new Libro(datosLibro);
-        //System.out.println(libro);// muestra el libro
+        if(!datos.resultados().isEmpty()){
+            DatosLibro datosLibro = datos.resultados().getFirst(); // devuelve el primer libro encontrado
+            Libro libro = new Libro(datosLibro);
+            //System.out.println(libro);// muestra el libro
 
-        Optional<Libro> existeLibro = repositorioLibro.findByTituloContainsIgnoreCase(libro.getTitulo());
-        if(existeLibro.isPresent()){
-            System.out.println("Libro " + libro.getTitulo().toUpperCase() + " registrado en la BASE DE DATOS!");
-        }
-        else{
-            if(!datosLibro.autor().isEmpty()){
-                DatosAutor datosAutor = datosLibro.autor().getFirst(); // recupera los datos del autor
-                Autor autor = new Autor(datosAutor); // Setea la clase Autor con sus respectivos datos
-
-                Optional<Autor> busquedaAutor = repositorioAutor.findByNombreContainsIgnoreCase(autor.getNombre());
-                Autor autorExistente; //Obtener el autor existente o guardar el nuevo autor
-                if (busquedaAutor.isEmpty()) {
-                    autorExistente = repositorioAutor.save(autor); // Si no tiene un valor, guardamos el nuevo autor en el repositorio y usamos el autor guardado
-                } else {
-                    autorExistente = busquedaAutor.get(); // Si tiene un valor, lo usamos
-                }
-                libro.setAutor(autorExistente);// Asignar el autor al libro
-                repositorioLibro.save(libro); //Guardar el libro en el repositorio
-                mostrarLibroUnico(libro, autor);
+            Optional<Libro> existeLibro = repositorioLibro.findByTituloContainsIgnoreCase(libro.getTitulo());
+            if(existeLibro.isPresent()){
+                System.out.println("Libro " + libro.getTitulo().toUpperCase() + " registrado en la BASE DE DATOS!");
             }
             else{
-                System.out.println("Libro encontrado sin Autor en la API");
+                if(!datosLibro.autor().isEmpty()){
+                    DatosAutor datosAutor = datosLibro.autor().getFirst(); // recupera los datos del autor
+                    Autor autor = new Autor(datosAutor); // Setea la clase Autor con sus respectivos datos
+
+                    Optional<Autor> busquedaAutor = repositorioAutor.findByNombreContainsIgnoreCase(autor.getNombre());
+                    Autor autorExistente; //Obtener el autor existente o guardar el nuevo autor
+                    if (busquedaAutor.isEmpty()) {
+                        autorExistente = repositorioAutor.save(autor); // Si no tiene un valor, guardamos el nuevo autor en el repositorio y usamos el autor guardado
+                    } else {
+                        autorExistente = busquedaAutor.get(); // Si tiene un valor, lo usamos
+                    }
+                    libro.setAutor(autorExistente);// Asignar el autor al libro
+                    repositorioLibro.save(libro); //Guardar el libro en el repositorio
+                    mostrarLibroUnico(libro, autor);
+                }
+                else{
+                    System.out.println("Libro encontrado sin Autor en la API");
+                }
             }
         }
+        else{
+            System.out.println("Libro no encontrado en la API");
+        }
+
 
     }
 

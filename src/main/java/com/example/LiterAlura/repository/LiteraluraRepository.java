@@ -20,6 +20,4 @@ public interface LiteraluraRepository extends JpaRepository<Libro, Long> {
 
     @Query("SELECT l FROM Libro l ORDER BY l.numeroDescargas DESC LIMIT 3")
     List<Libro> findTop10ByNumeroDescargas();
-
-
 }
