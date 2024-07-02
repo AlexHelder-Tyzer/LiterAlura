@@ -10,6 +10,7 @@ import org.springframework.aop.scope.ScopedProxyUtils;
 import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Principal {
     private Scanner teclado = new Scanner(System.in);
@@ -40,6 +41,8 @@ public class Principal {
                     3. Listar autores regitrados
                     4. Listar autores vivos en un determinado anho
                     5. Listar libros por idioma
+                    6. Top 10 libros mas descargados
+                    7. Genrar estadisticas
 
                     0. Salir
                     *********************************************
@@ -63,6 +66,12 @@ public class Principal {
                         break;
                     case 5:
                         listarLibrosPorIdioma();
+                        break;
+                    case 6:
+                        top10LibrosMasDescargados();
+                        break;
+                    case 7:
+                        estadisticasDeLibros();
                         break;
                     case 0:
                         System.out.println("Cerrando la palicacion!!");
@@ -132,7 +141,7 @@ public class Principal {
     }
 
     private void listarLibrosRegistrados(){
-        List<Libro> librosGuardados = repositorioLibro.listar();
+        List<Libro> librosGuardados = repositorioLibro.listarLibros();
         if (librosGuardados.isEmpty()){
             System.out.println("No se encontraron libros");
         }
@@ -211,4 +220,30 @@ public class Principal {
             libros.forEach(System.out::println);
         }
     }
+
+    private void top10LibrosMasDescargados(){
+       libros = repositorioLibro.findTop10ByNumeroDescargas();
+        if(!libros.isEmpty()){
+            libros.stream()
+                    .sorted(Comparator.comparing(Libro::getNumeroDescargas).reversed())
+                    .limit(10)
+                    .forEach(System.out::println);
+        }
+        else{
+            System.out.println("No existen libros para este TOP");
+        }
+    }
+
+    private void estadisticasDeLibros(){
+        libros = repositorioLibro.listarLibros();
+        DoubleSummaryStatistics est = libros.stream()
+                .filter(e -> e.getNumeroDescargas() > 0)
+                .collect(Collectors.summarizingDouble(Libro::getNumeroDescargas));
+
+        System.out.println("La Media de descargas es: " + est.getAverage());
+        System.out.println("Libro mas descargado: " + est.getMax());
+        System.out.println("Libro menos descargado: " + est.getMin());
+    }
+
+
 }
