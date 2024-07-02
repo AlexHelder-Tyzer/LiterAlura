@@ -205,6 +205,7 @@ public class Principal {
             }
         }catch (NumberFormatException e){
             System.out.println("Solo se aceptan valores Numericos!! " + e.getMessage());
+            listarLibrosPorIdioma();
         }
 
     }
